@@ -13,3 +13,5 @@ export function dateDifferenceInDays(date1: Date, date2: Date) {
     const differenceDays = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
     return differenceDays;
 }
+
+export const curreny = "kr.";

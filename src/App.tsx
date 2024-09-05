@@ -6,12 +6,17 @@ import GuessForm from './components/guess-form';
 import Header from './components/header';
 import { dateDifferenceInDays, GameData } from './types';
 import Item from './components/item';
+import { GuessWithDirection, PrevGuesses } from './components/prev-guesses';
+
+const queryParams = new URLSearchParams(window.location.search);
+const dateParam = queryParams.get("date");
 
 const startDate = new Date("2024-09-05");
-const now = new Date();
+const now = dateParam ? new Date(dateParam) : new Date();
 const gameIndexOffset = dateDifferenceInDays(startDate, now);
 console.log(startDate, now, gameIndexOffset)
 
+const guessAttempts = 6;
 
 const App: React.FC = () => {
   const [game, setGame] = useState<GameData | null>(null)
@@ -21,28 +26,39 @@ const App: React.FC = () => {
     if (data && data?.length > 0) {
       // setGame(data[gameIndexOffset]);
       const todaysGame = data[gameIndexOffset]
-      console.log(todaysGame)
       if (todaysGame) {
         setGame(todaysGame)
       }
     }
   }, [data])
 
-  const [, setGuess] = useState<string>('');
+  const [guesses, setGuesses] = useState<GuessWithDirection[]>(Array.from(Array(guessAttempts)).map(() => ({ dir: "" })));
+  const [guessAttempt, setGuessAttempt] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>('');
 
   const handleGuess = (game: GameData, newGuess: string) => {
-    setGuess(newGuess);
-
+    if ((guessAttempt + 1) > guessAttempts) {
+      return;
+    }
     const guessedPrice = parseFloat(newGuess);
-
+    let dir = 'ok';
     if (guessedPrice === game.price) {
       setFeedback('Korrekt! Du gættede rigtigt! 🎉');
-    } else if (guessedPrice > game.price) {
-      setFeedback('For højt!');
-    } else {
-      setFeedback('For lavt!');
     }
+
+    setGuesses(guesses => {
+      if (guessedPrice > game.price) {
+        dir = 'down'
+      } else if (guessedPrice < game.price) {
+        dir = 'up'
+      }
+      guesses[guessAttempt] = {
+        guess: guessedPrice,
+        dir: dir,
+      }
+      return guesses;
+    });
+    setGuessAttempt(currentAttempt => currentAttempt + 1);
   };
 
   return (
@@ -52,11 +68,13 @@ const App: React.FC = () => {
       {isError ? <p>Der skete en fejl</p> : null}
       {!game ? <p>Dagens pris mangler...</p> : null}
       {game ? (
-        <>
+        <div className="w-96">
           <Item game={game} />
+          <p className="text-xl text-center">Gæt {guessAttempt + 1}/{guessAttempts}</p>
+          <PrevGuesses guesses={guesses} />
           <GuessForm onGuess={(guess) => handleGuess(game, guess)} />
           <Feedback feedback={feedback} />
-        </>
+        </div>
       ) : null}
     </div>
   );
