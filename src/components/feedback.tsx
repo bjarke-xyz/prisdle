@@ -1,13 +1,15 @@
 import React from 'react';
 
 interface FeedbackProps {
-    feedback: string;
+    feedback: string[];
 }
 
 const Feedback: React.FC<FeedbackProps> = ({ feedback }) => {
     return (
-        <div className="mt-4">
-            <p className="text-xl text-gray-700">{feedback}</p>
+        <div className="my-8">
+            {feedback.map((fb) => (
+                <p key={`${fb}`} className="text-xl text-center">{fb}</p>
+            ))}
         </div>
     );
 };

@@ -1,8 +1,10 @@
-import { curreny } from "../types";
+import { currency } from "../types";
+
+export type GuessDirection = "up" | "down" | "up-almost" | "down-almost" | "ok" | null;
 
 export interface GuessWithDirection {
     guess?: number;
-    dir: string;
+    dir: GuessDirection;
 }
 interface PrevGuessesProps {
     guesses: GuessWithDirection[]
@@ -10,15 +12,30 @@ interface PrevGuessesProps {
 
 export const PrevGuesses: React.FC<PrevGuessesProps> = ({ guesses }) => {
     return (
-        <div className="mb-4">
+        <div className="mb-8 flex flex-col gap-2">
             {guesses.map((guess, i) => (
-                <div key={`${i}_${guess.guess}`} className="max-w-full my-2 p-2 h-8">
+                <div key={`${i}_${guess.guess}`} className="max-w-full">
                     <div className="flex flex-row gap-4">
-                        <div className="w-64 p-1 text-center bg-gray-400">{guess.guess ? `${guess.guess} ${curreny}` : null}&nbsp;</div>
-                        <div className="w-32 bg-gray-400 text-center">{guess.dir === "up" ? "⬆️" : guess.dir === "down" ? "⬇️" : guess.dir === "ok" ? "✅" : null}</div>
+                        <div className="input">{guess.guess ? `${guess.guess} ${currency}` : null}&nbsp;</div>
+                        <div className={`${(guess.dir === 'ok' ? 'bg-green-200' : (guess.dir === 'up' || guess.dir === 'down') ? 'bg-red-400' : guess.dir?.includes("-almost") ? 'bg-yellow-200' : null)} w-32 rounded border-2 border-gray-300 bg-gray-400 text-center flex items-center`}>
+                            <span className="w-full">
+                                {getEmoji(guess.dir)}
+                            </span>
+                        </div>
                     </div>
                 </div>
             ))}
         </div>
     )
+}
+
+function getEmoji(dir: GuessDirection) {
+    if (dir?.includes("up")) {
+        return "⬆️"
+    } else if (dir?.includes('down')) {
+        return "⬇️"
+    } else if (dir === "ok") {
+        return "✅"
+    }
+    return null;
 }

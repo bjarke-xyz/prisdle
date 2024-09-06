@@ -4,15 +4,15 @@ import { getGames } from './api';
 import Feedback from './components/feedback';
 import GuessForm from './components/guess-form';
 import Header from './components/header';
-import { dateDifferenceInDays, GameData } from './types';
+import { currency, dateDifferenceInDays, GameData } from './types';
 import Item from './components/item';
-import { GuessWithDirection, PrevGuesses } from './components/prev-guesses';
+import { GuessDirection, GuessWithDirection, PrevGuesses } from './components/prev-guesses';
 
 const queryParams = new URLSearchParams(window.location.search);
 const dateParam = queryParams.get("date");
 
-const startDate = new Date("2024-09-05");
-const now = dateParam ? new Date(dateParam) : new Date();
+const startDate = new Date("2024-09-05T00:00:00.000Z");
+const now = dateParam ? new Date(dateParam + 'T00:00:00.000Z') : new Date();
 const gameIndexOffset = dateDifferenceInDays(startDate, now);
 console.log(startDate, now, gameIndexOffset)
 
@@ -32,25 +32,38 @@ const App: React.FC = () => {
     }
   }, [data])
 
-  const [guesses, setGuesses] = useState<GuessWithDirection[]>(Array.from(Array(guessAttempts)).map(() => ({ dir: "" })));
+  const [guesses, setGuesses] = useState<GuessWithDirection[]>(Array.from(Array(guessAttempts)).map(() => ({ dir: null })));
   const [guessAttempt, setGuessAttempt] = useState<number>(0);
-  const [feedback, setFeedback] = useState<string>('');
+  const [feedback, setFeedback] = useState<string[]>([]);
+  const [gameWon, setGameWon] = useState(false);
+  const [gameLost, setGameLost] = useState(false);
 
   const handleGuess = (game: GameData, newGuess: string) => {
-    if ((guessAttempt + 1) > guessAttempts) {
+    if (gameLost || gameWon) {
       return;
     }
+    const priceText = `Prisen var ${game.price} ${currency}`;
     const guessedPrice = parseFloat(newGuess);
-    let dir = 'ok';
-    if (guessedPrice === game.price) {
-      setFeedback('Korrekt! Du gættede rigtigt! 🎉');
+    const percentDiff = calculatePercentageDifference(game.price, guessedPrice);
+    let dir: GuessDirection = 'ok';
+    let _gameWon = false;
+    if (percentDiff <= 5) {
+      setFeedback(['Korrekt! Du gættede rigtigt! 🎉', priceText]);
+      setGameWon(true);
+      _gameWon = true;
     }
 
     setGuesses(guesses => {
-      if (guessedPrice > game.price) {
-        dir = 'down'
+      let suffix: '-almost' | '' = '';
+      if (percentDiff <= 25) {
+        suffix = "-almost";
+      }
+      if (percentDiff <= 5) {
+        dir = 'ok';
+      } else if (guessedPrice > game.price) {
+        dir = `down${suffix}`
       } else if (guessedPrice < game.price) {
-        dir = 'up'
+        dir = `up${suffix}`
       }
       guesses[guessAttempt] = {
         guess: guessedPrice,
@@ -58,6 +71,11 @@ const App: React.FC = () => {
       }
       return guesses;
     });
+    if ((guessAttempt + 1) >= guessAttempts && !_gameWon) {
+      setFeedback(["Du tabte 😔", priceText])
+      setGameLost(true);
+      return;
+    }
     setGuessAttempt(currentAttempt => currentAttempt + 1);
   };
 
@@ -70,10 +88,21 @@ const App: React.FC = () => {
       {game ? (
         <div className="w-96">
           <Item game={game} />
-          <p className="text-xl text-center">Gæt {guessAttempt + 1}/{guessAttempts}</p>
+          {gameWon ? (
+            <Feedback feedback={feedback} />
+          ) : gameLost ? (
+            <Feedback feedback={feedback} />
+          ) : (
+            <>
+              <p className="text-xl text-center">Gæt {guessAttempt + 1}/{guessAttempts}</p>
+              <Feedback feedback={feedback} />
+            </>
+          )}
           <PrevGuesses guesses={guesses} />
-          <GuessForm onGuess={(guess) => handleGuess(game, guess)} />
-          <Feedback feedback={feedback} />
+          {!gameWon && !gameLost ?
+            (
+              <GuessForm onGuess={(guess) => handleGuess(game, guess)} />
+            ) : null}
         </div>
       ) : null}
     </div>
@@ -81,3 +110,9 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+
+function calculatePercentageDifference(num1: number, num2: number, base = num1) {
+  const difference = Math.abs(num1 - num2);
+  return (difference / base) * 100;
+}

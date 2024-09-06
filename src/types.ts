@@ -14,4 +14,4 @@ export function dateDifferenceInDays(date1: Date, date2: Date) {
     return differenceDays;
 }
 
-export const curreny = "kr.";
+export const currency = "kr.";

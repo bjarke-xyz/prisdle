@@ -16,13 +16,14 @@ const GuessForm: React.FC<GuessFormProps> = ({ onGuess }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col items-center">
+        <form onSubmit={handleSubmit} className="flex flex-row items-center gap-4">
             <input
                 type="number"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Indtast en pris"
-                className="border-2 border-gray-300 p-2 rounded mb-4 text-center w-64"
+                min="0"
+                className="input"
             />
             <button type="submit" className="bg-blue-500 text-white p-2 rounded w-32">
                 Gæt!
