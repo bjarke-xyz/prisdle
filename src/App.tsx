@@ -7,6 +7,7 @@ import Header from './components/header';
 import { currency, dateDifferenceInDays, GameData } from './types';
 import Item from './components/item';
 import { GuessDirection, GuessWithDirection, PrevGuesses } from './components/prev-guesses';
+import { getGameState, saveGameState } from './storage';
 
 const queryParams = new URLSearchParams(window.location.search);
 const dateParam = queryParams.get("date");
@@ -38,17 +39,47 @@ const App: React.FC = () => {
   const [gameWon, setGameWon] = useState(false);
   const [gameLost, setGameLost] = useState(false);
 
+  useEffect(() => {
+    if (!game) return;
+    const gameState = getGameState();
+    if (gameState && gameState.gameId === game.itemId) {
+      setGuesses(gameState.guesses);
+      setGameWon(gameState.gameWon);
+      setGameLost(gameState.gameLost);
+    }
+  }, [game])
+
+  useEffect(() => {
+    if (!game) return;
+    let lastGuess: GuessWithDirection | null = null;
+    let guessAttempt = 0;
+    for (const guess of guesses) {
+      if (guess.guess !== undefined && guess.guess !== null) {
+        lastGuess = guess;
+        guessAttempt++;
+      }
+    }
+    if (!lastGuess || !lastGuess.guess) return;
+    setGuessAttempt(guessAttempt);
+    const priceText = `Prisen var ${game.price} ${currency}`;
+    if (lastGuess.dir === 'ok') {
+      setFeedback(['Korrekt! Du gættede rigtigt! 🎉', priceText]);
+    } else if (gameLost) {
+      setFeedback(["Du tabte 😔", priceText])
+    }
+  }, [guesses, game, gameLost])
+
   const handleGuess = (game: GameData, newGuess: string) => {
     if (gameLost || gameWon) {
       return;
     }
-    const priceText = `Prisen var ${game.price} ${currency}`;
+    // const priceText = `Prisen var ${game.price} ${currency}`;
     const guessedPrice = parseFloat(newGuess);
     const percentDiff = calculatePercentageDifference(game.price, guessedPrice);
     let dir: GuessDirection = 'ok';
     let _gameWon = false;
     if (percentDiff <= 5) {
-      setFeedback(['Korrekt! Du gættede rigtigt! 🎉', priceText]);
+      // setFeedback(['Korrekt! Du gættede rigtigt! 🎉', priceText]);
       setGameWon(true);
       _gameWon = true;
     }
@@ -69,15 +100,25 @@ const App: React.FC = () => {
         guess: guessedPrice,
         dir: dir,
       }
-      return guesses;
+      return [...guesses];
     });
     if ((guessAttempt + 1) >= guessAttempts && !_gameWon) {
-      setFeedback(["Du tabte 😔", priceText])
+      // setFeedback(["Du tabte 😔", priceText])
       setGameLost(true);
       return;
     }
-    setGuessAttempt(currentAttempt => currentAttempt + 1);
+    setGuessAttempt(currentAttempt => {
+      if ((currentAttempt + 1) >= guessAttempts) {
+        return guessAttempts;
+      }
+      return currentAttempt + 1;
+    });
   };
+
+  useEffect(() => {
+    if (!game) return;
+    saveGameState(game.itemId, guesses, gameWon, gameLost);
+  }, [game, guesses, gameWon, gameLost])
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-10">
