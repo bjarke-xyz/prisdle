@@ -8,6 +8,7 @@ import { currency, dateDifferenceInDays, GameData } from './types';
 import Item from './components/item';
 import { GuessDirection, GuessWithDirection, PrevGuesses } from './components/prev-guesses';
 import { getGameState, saveGameState } from './storage';
+import ConfettiExplosion from 'react-confetti-explosion';
 
 const queryParams = new URLSearchParams(window.location.search);
 const dateParam = queryParams.get("date");
@@ -20,6 +21,7 @@ console.log(startDate, now, gameIndexOffset)
 const guessAttempts = 6;
 
 const App: React.FC = () => {
+  const [isExploding, setIsExploding] = React.useState(false);
   const [game, setGame] = useState<GameData | null>(null)
   const { data, isLoading, isError } = useQuery({ queryKey: ['games'], queryFn: getGames })
 
@@ -81,6 +83,10 @@ const App: React.FC = () => {
     if (percentDiff <= 5) {
       // setFeedback(['Korrekt! Du gættede rigtigt! 🎉', priceText]);
       setGameWon(true);
+      // timing hack
+      setTimeout(() => {
+        setIsExploding(true);
+      }, 100)
       _gameWon = true;
     }
 
@@ -122,6 +128,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-10">
+      {isExploding && <ConfettiExplosion force={0.8} duration={5000} particleCount={250} width={1600} onComplete={() => setIsExploding(false)} />}
       <Header />
       {isLoading ? <p>Henter dagens pris...</p> : null}
       {isError ? <p>Der skete en fejl</p> : null}
