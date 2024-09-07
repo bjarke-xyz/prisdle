@@ -39,7 +39,7 @@ function guessesToText(guesses: GuessWithDirection[], maxGuesses: number, gameNu
 async function shareOrCopy(text: string): Promise<void> {
     if (navigator.share) {
         try {
-            await navigator.share({ text });
+            await navigator.share({ title: 'Pris Gæt', text, url: BASE_URL });
         } catch (error) {
             console.error('Error sharing:', error);
         }
