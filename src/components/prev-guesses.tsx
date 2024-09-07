@@ -7,7 +7,7 @@ interface PrevGuessesProps {
 
 export const PrevGuesses: React.FC<PrevGuessesProps> = ({ guesses }) => {
     return (
-        <div className=" flex flex-col gap-2">
+        <div className="flex flex-col gap-2 m-2">
             {guesses.map((guess, i) => (
                 <div key={`${i}_${guess.guess}`} className="max-w-full">
                     <div className="flex flex-row gap-4">

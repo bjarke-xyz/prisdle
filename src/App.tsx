@@ -1,12 +1,12 @@
 import React from 'react';
-import { GamePage } from './pages/game-page';
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 import ErrorPage from './pages/error-page';
-import { HelpPage } from './pages/help-page';
+import { GamePage } from './pages/game-page';
 import { GameStatsPage } from './pages/game-stats-page';
+import { HelpPage } from './pages/help-page';
 
 const router = createBrowserRouter([
   {

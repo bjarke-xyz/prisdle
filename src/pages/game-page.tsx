@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ConfettiExplosion from "react-confetti-explosion";
-import { getGames } from "../lib/api";
-import { getGameState, saveGameState, updateGameStats } from "../lib/storage";
-import { calculatePercentageDifference, currency, dateDifferenceInDays, GameData, guessAttempts, GuessDirection, GuessWithDirection } from "../lib/types";
 import Feedback from "../components/feedback";
 import GuessForm from "../components/guess-form";
+import { Header } from "../components/header";
 import Item from "../components/item";
 import { PrevGuesses } from "../components/prev-guesses";
 import { ShareButton } from "../components/share-button";
-import { Header } from "../components/header";
+import { getGames } from "../lib/api";
+import { getGameState, saveGameState, updateGameStats } from "../lib/storage";
+import { calculatePercentageDifference, currency, dateDifferenceInDays, GameData, guessAttempts, GuessDirection, GuessWithDirection } from "../lib/types";
 
 const canSetDate = false;
 let dateParam: string | null = null;
@@ -135,7 +135,7 @@ export const GamePage: React.FC = () => {
                 {isError ? <p>Der skete en fejl</p> : null}
                 {!game && !isLoading && !isError ? <p>Dagens pris mangler...</p> : null}
                 {game ? (
-                    <div className="w-96">
+                    <div className="w-80">
                         <Item game={game} isShaking={isShaking} />
                         {gameWon ? (
                             <Feedback feedback={feedback} />

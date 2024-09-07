@@ -14,7 +14,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({ maxGuesses, guesses, g
         shareOrCopy(text);
     }
     return (
-        <button onClick={handleShareClicked} className={`w-full p-4 rounded ${gameWon ? 'bg-green-200' : 'bg-red-400'}`}>
+        <button onClick={handleShareClicked} className={`w-full py-4 rounded ${gameWon ? 'bg-green-200' : 'bg-red-400'}`}>
             Del
         </button>
     )

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react"
-import { GameStats, getGameStats } from "../lib/storage"
+import { BarElement, CategoryScale, Chart, LinearScale, Tooltip } from "chart.js";
+import { useEffect, useState } from "react";
+import { Bar } from 'react-chartjs-2';
 import { Header } from "../components/header";
-import { Bar } from 'react-chartjs-2'
-import { BarElement, CategoryScale, Chart, LinearScale } from "chart.js";
-Chart.register(CategoryScale, LinearScale, BarElement)
+import { GameStats, getGameStats } from "../lib/storage";
+Chart.register(CategoryScale, LinearScale, BarElement, Tooltip)
 
 interface ChartData {
     labels: (string | number)[];
@@ -31,7 +31,15 @@ export const GameStatsPage: React.FC = () => {
     const options = {
         backgroundColor: 'rgb(37, 99, 235)',
         indexAxis: 'y' as const,
-        barThickness: "20"
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: (context: { parsed: { x: number, y: number } }) => {
+                        return `Du har vundet ${context.parsed.x} gang${context.parsed.x === 1 ? '' : 'e'}, på ${context.parsed.y + 1}. gæt`
+                    }
+                }
+            }
+        }
     }
     return (
         <>
