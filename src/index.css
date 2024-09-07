@@ -15,4 +15,8 @@
     margin: 0;
     -moz-appearance: textfield !important;
   }
+
+  .link {
+    @apply underline;
+  }
 }

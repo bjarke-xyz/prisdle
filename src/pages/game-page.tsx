@@ -148,6 +148,7 @@ export const GamePage: React.FC = () => {
                             </>
                         )}
                         <PrevGuesses guesses={guesses} />
+                        <div className="mb-8"></div>
                         {!gameWon && !gameLost ?
                             (
                                 <GuessForm onGuess={(guess) => handleGuess(game, guess)} />
