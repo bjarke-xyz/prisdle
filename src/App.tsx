@@ -39,6 +39,7 @@ const App: React.FC = () => {
   const [feedback, setFeedback] = useState<string[]>([]);
   const [gameWon, setGameWon] = useState(false);
   const [gameLost, setGameLost] = useState(false);
+  const [isShaking, setIsShaking] = useState(false);
 
   useEffect(() => {
     if (!game) return;
@@ -76,7 +77,6 @@ const App: React.FC = () => {
     }
     const guessedPrice = parseFloat(newGuess);
     const percentDiff = calculatePercentageDifference(game.price, guessedPrice);
-    let dir: GuessDirection = 'ok';
     let _gameWon = false;
     if (percentDiff <= 5) {
       setGameWon(true);
@@ -89,6 +89,7 @@ const App: React.FC = () => {
       if (percentDiff <= 25) {
         suffix = "-almost";
       }
+      let dir: GuessDirection = 'ok';
       if (percentDiff <= 5) {
         dir = 'ok';
       } else if (guessedPrice > game.price) {
@@ -102,6 +103,9 @@ const App: React.FC = () => {
       }
       return [...guesses];
     });
+    if (!_gameWon) {
+      setIsShaking(true);
+    }
     if ((guessAttempt + 1) >= guessAttempts && !_gameWon) {
       setGameLost(true);
       return;
@@ -128,7 +132,7 @@ const App: React.FC = () => {
       {!game ? <p>Dagens pris mangler...</p> : null}
       {game ? (
         <div className="w-96">
-          <Item game={game} />
+          <Item game={game} isShaking={isShaking} />
           {gameWon ? (
             <Feedback feedback={feedback} />
           ) : gameLost ? (
