@@ -27,7 +27,6 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (data && data?.length > 0) {
-      // setGame(data[gameIndexOffset]);
       const todaysGame = data[gameIndexOffset]
       if (todaysGame) {
         setGame(todaysGame)
@@ -75,18 +74,13 @@ const App: React.FC = () => {
     if (gameLost || gameWon) {
       return;
     }
-    // const priceText = `Prisen var ${game.price} ${currency}`;
     const guessedPrice = parseFloat(newGuess);
     const percentDiff = calculatePercentageDifference(game.price, guessedPrice);
     let dir: GuessDirection = 'ok';
     let _gameWon = false;
     if (percentDiff <= 5) {
-      // setFeedback(['Korrekt! Du gættede rigtigt! 🎉', priceText]);
       setGameWon(true);
-      // timing hack
-      setTimeout(() => {
-        setIsExploding(true);
-      }, 100)
+      setIsExploding(true);
       _gameWon = true;
     }
 
@@ -109,7 +103,6 @@ const App: React.FC = () => {
       return [...guesses];
     });
     if ((guessAttempt + 1) >= guessAttempts && !_gameWon) {
-      // setFeedback(["Du tabte 😔", priceText])
       setGameLost(true);
       return;
     }
