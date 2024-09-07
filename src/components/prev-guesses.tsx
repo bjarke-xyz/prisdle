@@ -1,11 +1,6 @@
-import { currency } from "../types";
+import { currency, getEmoji, GuessWithDirection } from "../types";
 
-export type GuessDirection = "up" | "down" | "up-almost" | "down-almost" | "ok" | null;
 
-export interface GuessWithDirection {
-    guess?: number;
-    dir: GuessDirection;
-}
 interface PrevGuessesProps {
     guesses: GuessWithDirection[]
 }
@@ -27,15 +22,4 @@ export const PrevGuesses: React.FC<PrevGuessesProps> = ({ guesses }) => {
             ))}
         </div>
     )
-}
-
-function getEmoji(dir: GuessDirection) {
-    if (dir?.includes("up")) {
-        return "⬆️"
-    } else if (dir?.includes('down')) {
-        return "⬇️"
-    } else if (dir === "ok") {
-        return "✅"
-    }
-    return null;
 }

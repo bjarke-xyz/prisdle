@@ -1,4 +1,4 @@
-import { GuessWithDirection } from "./components/prev-guesses";
+import { GuessWithDirection } from "./types";
 
 interface GameState {
     gameId: string;

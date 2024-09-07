@@ -4,11 +4,12 @@ import { getGames } from './api';
 import Feedback from './components/feedback';
 import GuessForm from './components/guess-form';
 import Header from './components/header';
-import { currency, dateDifferenceInDays, GameData } from './types';
+import { currency, dateDifferenceInDays, GameData, GuessDirection, GuessWithDirection } from './types';
 import Item from './components/item';
-import { GuessDirection, GuessWithDirection, PrevGuesses } from './components/prev-guesses';
 import { getGameState, saveGameState } from './storage';
 import ConfettiExplosion from 'react-confetti-explosion';
+import { ShareButton } from './components/share-button';
+import { PrevGuesses } from './components/prev-guesses';
 
 const queryParams = new URLSearchParams(window.location.search);
 const dateParam = queryParams.get("date");
@@ -16,7 +17,7 @@ const dateParam = queryParams.get("date");
 const startDate = new Date("2024-09-05T00:00:00.000Z");
 const now = dateParam ? new Date(dateParam + 'T00:00:00.000Z') : new Date();
 const gameIndexOffset = dateDifferenceInDays(startDate, now);
-console.log(startDate, now, gameIndexOffset)
+// console.log(startDate, now, gameIndexOffset)
 
 const guessAttempts = 6;
 
@@ -147,7 +148,9 @@ const App: React.FC = () => {
           {!gameWon && !gameLost ?
             (
               <GuessForm onGuess={(guess) => handleGuess(game, guess)} />
-            ) : null}
+            ) : (
+              <ShareButton maxGuesses={guessAttempts} guesses={guesses} gameNumber={gameIndexOffset + 1} gameWon={gameWon} />
+            )}
         </div>
       ) : null}
     </div>

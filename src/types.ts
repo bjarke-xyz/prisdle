@@ -15,3 +15,28 @@ export function dateDifferenceInDays(date1: Date, date2: Date) {
 }
 
 export const currency = "kr.";
+
+export function getEmoji(dir: GuessDirection): string | null {
+    if (dir?.includes("up")) {
+        return "⬆️"
+    } else if (dir?.includes('down')) {
+        return "⬇️"
+    } else if (dir === "ok") {
+        return "✅"
+    }
+    return null;
+}
+
+export function getEmojiColor(dir: GuessDirection): string | null {
+    if (dir === 'up' || dir === 'down') {
+        return '🟥'
+    } else if (dir?.includes('almost')) {
+        return '🟨'
+    }
+    return null;
+}
+export interface GuessWithDirection {
+    guess?: number;
+    dir: GuessDirection;
+}
+export type GuessDirection = "up" | "down" | "up-almost" | "down-almost" | "ok" | null;
