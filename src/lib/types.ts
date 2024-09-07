@@ -1,3 +1,4 @@
+export const guessAttempts = 6;
 
 export interface GameData {
     itemId: string;
@@ -40,3 +41,18 @@ export interface GuessWithDirection {
     dir: GuessDirection;
 }
 export type GuessDirection = "up" | "down" | "up-almost" | "down-almost" | "ok" | null;
+
+export function calculatePercentageDifference(num1: number, num2: number, base = num1) {
+    const difference = Math.abs(num1 - num2);
+    return (difference / base) * 100;
+}
+
+export function getNumberOfGuesses(guesses: GuessWithDirection[]): number {
+    let numberOfGuesses = 0;
+    for (const g of guesses) {
+        if (g.guess) {
+            numberOfGuesses++;
+        }
+    }
+    return numberOfGuesses;
+}

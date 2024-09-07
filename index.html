@@ -18,12 +18,22 @@
 </head>
 
 <body>
-  <div class="min-h-screen bg-gray-100 flex flex-col items-center pt-10">
-    <header class="text-center mb-8">
-      <h1 class="text-4xl font-bold text-blue-600">Pris Gæt</h1>
-      <h2 class="text-lg text-gray-600">Gæt prisen på dagens vare</h2>
-    </header>
-    <div id="root"></div>
+  <div id="root">
+    <div class="min-h-screen bg-gray-100 flex flex-col items-center pt-10">
+      <!-- If updating static elements, remember to update components/header.tsx too -->
+      <header class="text-center mb-8">
+        <div class="flex flex-row justify-center items-center gap-4">
+          <a class="text-2xl" title="Hjælp" href="/help">❓</a>
+          <h1 class="text-4xl font-bold text-blue-600">
+            <a href="/">
+              Pris Gæt
+            </a>
+          </h1>
+          <a class="text-2xl" title="Statistik" href="/stats">📊</a>
+        </div>
+        <h2 class="text-lg text-gray-600">Gæt prisen på dagens vare</h2>
+      </header>
+    </div>
   </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { BASE_URL } from "../constants";
-import { GuessWithDirection, getEmoji, getEmojiColor } from "../types";
+import { GuessWithDirection, getEmoji, getEmojiColor, getNumberOfGuesses } from "../lib/types";
 
 export interface ShareButtonProps {
     maxGuesses: number;
@@ -22,15 +22,14 @@ export const ShareButton: React.FC<ShareButtonProps> = ({ maxGuesses, guesses, g
 
 function guessesToText(guesses: GuessWithDirection[], maxGuesses: number, gameNumber: number, gameWon: boolean): string {
     let lines: string[] = [];
-    let guessesUsed = 0;
     for (const guess of guesses) {
         const emoji = getEmoji(guess.dir);
         if (emoji) {
             lines.push(`${emoji}${getEmojiColor(guess.dir) ?? ''}`)
-            guessesUsed++;
         }
     }
-    const guessesUsedStr = !gameWon ? 'X' : guessesUsed.toString();
+    const numberOfGuesses = getNumberOfGuesses(guesses);
+    const guessesUsedStr = !gameWon ? 'X' : numberOfGuesses.toString();
     lines = [`Pris Gæt #${gameNumber} ${guessesUsedStr}/${maxGuesses}`, ...lines];
     lines.push(BASE_URL);
     return lines.join("\n");

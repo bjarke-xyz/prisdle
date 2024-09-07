@@ -1,4 +1,4 @@
-import { currency, getEmoji, GuessWithDirection } from "../types";
+import { currency, getEmoji, GuessWithDirection } from "../lib/types";
 
 
 interface PrevGuessesProps {

@@ -1,4 +1,4 @@
-import { GameData } from "../types"
+import { GameData } from "../lib/types"
 
 interface ItemProps {
     game: GameData;
