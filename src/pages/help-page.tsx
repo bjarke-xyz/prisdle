@@ -10,6 +10,7 @@ export const HelpPage: React.FC = () => {
                 <h3 className="text-2xl">Spillet</h3>
                 <p>Gæt varens pris på {guessAttempts} forsøg.</p>
                 <p>Forkerte gæt vil give dig et hint om den rigtige pris.</p>
+                <p>Der kommer en ny vare hver dag.</p>
 
                 <h3 className="text-2xl mt-8">Eksempler</h3>
                 <PrevGuesses guesses={[{ dir: 'up', guess: 10 }]} />
