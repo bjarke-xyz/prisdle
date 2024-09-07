@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { getGames } from './api';
 import Feedback from './components/feedback';
 import GuessForm from './components/guess-form';
-import Header from './components/header';
 import { currency, dateDifferenceInDays, GameData, GuessDirection, GuessWithDirection } from './types';
 import Item from './components/item';
 import { getGameState, saveGameState } from './storage';
@@ -125,9 +124,8 @@ const App: React.FC = () => {
   }, [game, guesses, gameWon, gameLost])
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-10">
+    <div>
       {isExploding && <ConfettiExplosion force={0.8} duration={5000} particleCount={250} width={1600} onComplete={() => setIsExploding(false)} />}
-      <Header />
       {isLoading ? <p>Henter dagens pris...</p> : null}
       {isError ? <p>Der skete en fejl</p> : null}
       {!game ? <p>Dagens pris mangler...</p> : null}
