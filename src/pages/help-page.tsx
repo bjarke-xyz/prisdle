@@ -21,7 +21,7 @@ export const HelpPage: React.FC = () => {
 
                 <h3 className="text-2xl mt-8">Om</h3>
                 <p>Kildekoden er tilgængelig på <a className="link" href="https://github.com/bjarke-xyz/prisdle" target="_blank">GitHub</a></p>
-                <p>Inspireret af <a className="link" href="https://costcodle.com/" target="_blank">https://costcodle.com/</a></p>
+                <p>Inspireret af <a className="link" href="https://costcodle.com" target="_blank">https://costcodle.com</a></p>
             </div>
         </>
     )
