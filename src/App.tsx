@@ -128,7 +128,7 @@ const App: React.FC = () => {
       {isExploding && <ConfettiExplosion force={0.8} duration={5000} particleCount={250} width={1600} onComplete={() => setIsExploding(false)} />}
       {isLoading ? <p>Henter dagens pris...</p> : null}
       {isError ? <p>Der skete en fejl</p> : null}
-      {!game ? <p>Dagens pris mangler...</p> : null}
+      {!game && !isLoading && !isError ? <p>Dagens pris mangler...</p> : null}
       {game ? (
         <div className="w-96">
           <Item game={game} isShaking={isShaking} />
