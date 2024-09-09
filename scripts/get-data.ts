@@ -111,6 +111,7 @@ function saveGames(allGames: GameData[]) {
 async function main() {
     const rawDataContainer = await getDataJson();
     const games = makeGames(rawDataContainer);
+    shuffle(games);
     saveGames(games);
     console.log(games)
 }
