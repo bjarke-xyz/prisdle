@@ -18,7 +18,7 @@ if (canSetDate) {
     dateParam = queryParams.get("date");
 }
 
-const startDate = new Date("2024-09-05T00:00:00.000Z");
+const startDate = new Date("2024-09-09T00:00:00.000Z");
 const now = dateParam ? new Date(dateParam + 'T00:00:00.000Z') : new Date();
 const gameIndexOffset = dateDifferenceInDays(startDate, now);
 export const GamePage: React.FC = () => {
