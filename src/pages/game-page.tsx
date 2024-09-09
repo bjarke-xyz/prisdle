@@ -44,8 +44,8 @@ export const GamePage: React.FC = () => {
 
     useEffect(() => {
         if (!game) return;
-        const gameState = getGameState();
-        if (gameState && gameState.gameId === game.itemId) {
+        const gameState = getGameState(game.itemId);
+        if (gameState) {
             setGuesses(gameState.guesses);
             setGameWon(gameState.gameWon);
             setGameLost(gameState.gameLost);

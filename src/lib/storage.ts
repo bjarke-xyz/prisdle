@@ -12,11 +12,11 @@ export function saveGameState(gameId: string, guesses: GuessWithDirection[], gam
         gameId, guesses, gameWon, gameLost
     }
     const gameStateJson = JSON.stringify(gameState);
-    localStorage.setItem("state", gameStateJson);
+    localStorage.setItem(`state:${gameId}`, gameStateJson);
 }
 
-export function getGameState(): GameState | null {
-    const gameStateJson = localStorage.getItem("state");
+export function getGameState(gameId: string): GameState | null {
+    const gameStateJson = localStorage.getItem(`state:${gameId}`);
     if (!gameStateJson) return null;
     return JSON.parse(gameStateJson);
 }
@@ -43,7 +43,6 @@ export function updateGameStats(gameWon: boolean, guesses: number) {
         currentStats.numberOfWins++;
     }
     if (gameWon) {
-        console.log(guesses)
         currentStats.winDistribution[guesses - 1]++;
         currentStats.currentStreak++;
     } else {

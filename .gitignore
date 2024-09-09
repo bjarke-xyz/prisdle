@@ -29,3 +29,4 @@ dist-ssr
 
 scripts/raw-data*
 games.json
+random-games.json

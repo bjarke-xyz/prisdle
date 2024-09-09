@@ -1,14 +1,13 @@
 import fs from 'node:fs'
 
+// TODO: automate this
+const usedGameIds = new Set(["417046", "411428", "412675", "412673", "411433"]);
+
 interface GameData {
     itemId: string;
     name: string;
     price: number;
     image: string;
-}
-
-interface GameMetadata {
-    currency: string;
 }
 
 interface RawDataHit {
@@ -72,7 +71,8 @@ function makeGames(rawDataContainer: RawDataContainer): GameData[] {
         shuffle(rawDataResult.hits)
         for (const hit of rawDataResult.hits) {
             const noAgeLimit = hit.min_age === null;
-            const hitOk = noAgeLimit;
+            const itemUsed = usedGameIds.has(hit.id.toString());
+            const hitOk = noAgeLimit && !itemUsed;
             if (!hitOk) continue;
             const game = makeGame(hit);
             games.push(game);
@@ -91,9 +91,21 @@ function makeGame(rawDataHit: RawDataHit): GameData {
     }
 }
 
-function saveGames(games: GameData[]) {
-    const gamesFile = "./games.json";
-    fs.writeFileSync(gamesFile, JSON.stringify(games));
+function saveGames(allGames: GameData[]) {
+    const dailyGamesFile = "./games.json";
+    const randomGamesFile = "./random-games.json"
+    const randomGamesLength = allGames.length / 3;
+    const randomGames: GameData[] = [];
+    const dailyGames: GameData[] = [];
+    for (let i = 0; i < allGames.length; i++) {
+        if (i < randomGamesLength) {
+            randomGames.push(allGames[i]);
+        } else {
+            dailyGames.push(allGames[i])
+        }
+    }
+    fs.writeFileSync(randomGamesFile, JSON.stringify(randomGames))
+    fs.writeFileSync(dailyGamesFile, JSON.stringify(dailyGames));
 }
 
 async function main() {
