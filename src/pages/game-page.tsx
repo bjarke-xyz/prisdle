@@ -9,7 +9,8 @@ import { PrevGuesses } from "../components/prev-guesses";
 import { ShareButton } from "../components/share-button";
 import { getGames } from "../lib/api";
 import { getGameState, saveGameState, updateGameStats } from "../lib/storage";
-import { calculatePercentageDifference, currency, dateDifferenceInDays, GameData, guessAttempts, GuessDirection, GuessWithDirection } from "../lib/types";
+import { calculatePercentageDifference, currency, dateDifferenceInDays, GameData, guessAttempts, GuessDirection, GuessWithDirection, pickRandom } from "../lib/types";
+import CountdownToMidnightUTC from "../components/countdown";
 
 const canSetDate = false;
 let dateParam: string | null = null;
@@ -21,19 +22,43 @@ if (canSetDate) {
 const startDate = new Date("2024-09-09T00:00:00.000Z");
 const now = dateParam ? new Date(dateParam + 'T00:00:00.000Z') : new Date();
 const gameIndexOffset = dateDifferenceInDays(startDate, now);
-export const GamePage: React.FC = () => {
+interface GamePageProps {
+    mode: 'daily' | 'random';
+}
+export const GamePage: React.FC<GamePageProps> = ({ mode }) => {
     const [isExploding, setIsExploding] = React.useState(false);
     const [game, setGame] = useState<GameData | null>(null)
-    const { data, isLoading, isError } = useQuery({ queryKey: ['games'], queryFn: getGames })
+    const { data, isLoading, isError } = useQuery({ queryKey: ['games', mode], queryFn: () => getGames(mode === 'random') })
 
     useEffect(() => {
         if (data && data?.length > 0) {
-            const todaysGame = data[gameIndexOffset]
+            let todaysGame: GameData | null = null;
+            if (mode === 'daily') {
+                todaysGame = data[gameIndexOffset]
+            } else if (mode === 'random') {
+                let newGameFound = false;
+                const maxAttempts = data.length - 1;
+                let newGameAttempt = 0;
+                while (!newGameFound) {
+                    const _todaysGame = pickRandom(data);
+                    const gameState = getGameState(_todaysGame.itemId);
+                    if (!gameState || gameState.guesses.some(x => !x.guess)) {
+                        newGameFound = true;
+                        todaysGame = _todaysGame;
+                        break;
+                    }
+                    newGameAttempt++;
+                    if (newGameAttempt >= maxAttempts) {
+                        newGameFound = true;
+                        break;
+                    }
+                }
+            }
             if (todaysGame) {
                 setGame(todaysGame)
             }
         }
-    }, [data])
+    }, [data, mode])
 
     const [guesses, setGuesses] = useState<GuessWithDirection[]>(Array.from(Array(guessAttempts)).map(() => ({ dir: null })));
     const [guessAttempt, setGuessAttempt] = useState<number>(0);
@@ -137,10 +162,20 @@ export const GamePage: React.FC = () => {
                 {game ? (
                     <div className="w-80">
                         <Item game={game} isShaking={isShaking} />
-                        {gameWon ? (
-                            <Feedback feedback={feedback} />
-                        ) : gameLost ? (
-                            <Feedback feedback={feedback} />
+                        {gameWon || gameLost ? (
+                            <div className="flex flex-col gap-2 text-center">
+                                <Feedback feedback={feedback} />
+                                {mode === 'daily' ? (
+                                    <>
+                                        <p className="mb-4">Prøv igen om {" "}
+                                            <CountdownToMidnightUTC />.
+                                        </p>
+                                        <p>Eller, tryk <a className="link" href="/random">her</a> for at gætte prisen på en tilfældig vare</p>
+                                    </>
+                                ) : (
+                                    <p><a className="link" href="/random">Prøv en ny tilfældig vare</a></p>
+                                )}
+                            </div>
                         ) : (
                             <>
                                 <p className="text-xl text-center">Gæt {guessAttempt + 1}/{guessAttempts}</p>
@@ -153,7 +188,9 @@ export const GamePage: React.FC = () => {
                             (
                                 <GuessForm onGuess={(guess) => handleGuess(game, guess)} />
                             ) : (
-                                <ShareButton maxGuesses={guessAttempts} guesses={guesses} gameNumber={gameIndexOffset + 1} gameWon={gameWon} />
+                                mode === 'daily' ? (
+                                    <ShareButton maxGuesses={guessAttempts} guesses={guesses} gameNumber={gameIndexOffset + 1} gameWon={gameWon} />
+                                ) : null
                             )}
                     </div>
                 ) : null}

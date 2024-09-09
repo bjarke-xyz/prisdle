@@ -33,6 +33,7 @@ const GuessForm: React.FC<GuessFormProps> = ({ onGuess }) => {
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Indtast en pris"
                 min="0"
+                step=".01"
                 className="input"
             />
             <button type="submit" className="bg-blue-500 text-white p-2 rounded w-32">

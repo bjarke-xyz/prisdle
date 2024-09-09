@@ -11,16 +11,23 @@ import { HelpPage } from './pages/help-page';
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <GamePage />,
+    element: <GamePage mode='daily' />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/random",
+    element: <GamePage mode='random' />,
     errorElement: <ErrorPage />,
   },
   {
     path: 'stats',
-    element: <GameStatsPage />
+    element: <GameStatsPage />,
+    errorElement: <ErrorPage />,
   },
   {
     path: 'help',
-    element: <HelpPage />
+    element: <HelpPage />,
+    errorElement: <ErrorPage />,
   }
 ]);
 
