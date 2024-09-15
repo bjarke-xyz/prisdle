@@ -7,16 +7,17 @@ import ErrorPage from './pages/error-page';
 import { GamePage } from './pages/game-page';
 import { GameStatsPage } from './pages/game-stats-page';
 import { HelpPage } from './pages/help-page';
+import { getGameSourceFromLocation } from './lib/types';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <GamePage mode='daily' />,
+    element: <GamePage mode='daily' source={getGameSourceFromLocation(window.location)} />,
     errorElement: <ErrorPage />,
   },
   {
     path: "/random",
-    element: <GamePage mode='random' />,
+    element: <GamePage mode='random' source={getGameSourceFromLocation(window.location)} />,
     errorElement: <ErrorPage />,
   },
   {

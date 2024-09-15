@@ -1,5 +1,22 @@
 export const guessAttempts = 6;
 
+export type GameSource = 'rema1000' | 'dba';
+export const GameSources: GameSource[] = ['dba', 'rema1000'];
+
+export function getGameSourceFromLocation(location: Location): GameSource {
+    const searchParams = new URLSearchParams(location.search);
+    const gameSourceParam = searchParams.get('gs');
+    if (gameSourceParam === 'dba') return 'dba';
+    return 'rema1000';
+}
+
+export function getStartDate(gameSource: GameSource): Date {
+    switch (gameSource) {
+        case "dba": return new Date("2024-09-15T00:00:00.000Z");
+    }
+    return new Date("2024-09-09T00:00:00.000Z");
+}
+
 export interface GameData {
     itemId: string;
     name: string;

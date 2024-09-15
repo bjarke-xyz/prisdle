@@ -9,7 +9,7 @@ import { PrevGuesses } from "../components/prev-guesses";
 import { ShareButton } from "../components/share-button";
 import { getGames } from "../lib/api";
 import { getGameState, saveGameState, updateGameStats } from "../lib/storage";
-import { calculatePercentageDifference, currency, dateDifferenceInDays, GameData, guessAttempts, GuessDirection, GuessWithDirection, pickRandom } from "../lib/types";
+import { calculatePercentageDifference, currency, dateDifferenceInDays, GameData, GameSource, GameSources, getStartDate, guessAttempts, GuessDirection, GuessWithDirection, pickRandom } from "../lib/types";
 import CountdownToMidnightUTC from "../components/countdown";
 
 const canSetDate = false;
@@ -18,17 +18,18 @@ if (canSetDate) {
     const queryParams = new URLSearchParams(window.location.search);
     dateParam = queryParams.get("date");
 }
-
-const startDate = new Date("2024-09-09T00:00:00.000Z");
 const now = dateParam ? new Date(dateParam + 'T00:00:00.000Z') : new Date();
-const gameIndexOffset = dateDifferenceInDays(startDate, now);
+
 interface GamePageProps {
     mode: 'daily' | 'random';
+    source: GameSource;
 }
-export const GamePage: React.FC<GamePageProps> = ({ mode }) => {
+export const GamePage: React.FC<GamePageProps> = ({ mode, source }) => {
+    const startDate = getStartDate(source);
+    const gameIndexOffset = dateDifferenceInDays(startDate, now);
     const [isExploding, setIsExploding] = React.useState(false);
     const [game, setGame] = useState<GameData | null>(null)
-    const { data, isLoading, isError } = useQuery({ queryKey: ['games', mode], queryFn: () => getGames(mode === 'random') })
+    const { data, isLoading, isError } = useQuery({ queryKey: ['games', mode], queryFn: () => getGames(source, mode === 'random') })
 
     useEffect(() => {
         if (data && data?.length > 0) {
@@ -58,7 +59,7 @@ export const GamePage: React.FC<GamePageProps> = ({ mode }) => {
                 setGame(todaysGame)
             }
         }
-    }, [data, mode])
+    }, [data, mode, gameIndexOffset])
 
     const [guesses, setGuesses] = useState<GuessWithDirection[]>(Array.from(Array(guessAttempts)).map(() => ({ dir: null })));
     const [guessAttempt, setGuessAttempt] = useState<number>(0);
@@ -151,16 +152,29 @@ export const GamePage: React.FC<GamePageProps> = ({ mode }) => {
         saveGameState(game.itemId, guesses, gameWon, gameLost);
     }, [game, guesses, gameWon, gameLost])
 
+    function handleGameSourceChange(e: React.ChangeEvent<HTMLSelectElement>) {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('gs', e.target.value);
+        window.location.href = currentUrl.toString();
+    }
+
     return (
         <>
             <Header />
             <div>
                 {isExploding && <ConfettiExplosion force={0.8} duration={5000} particleCount={250} width={1600} onComplete={() => setIsExploding(false)} />}
-                {isLoading ? <p>Henter dagens pris...</p> : null}
+                {isLoading ? <p>Henter pris...</p> : null}
                 {isError ? <p>Der skete en fejl</p> : null}
-                {!game && !isLoading && !isError ? <p>Dagens pris mangler...</p> : null}
+                {!game && !isLoading && !isError ? <p>Pris mangler...</p> : null}
                 {game ? (
                     <div className="w-80">
+                        <div className="flex justify-center mb-4">
+                            <select className="p-2 rounded" onChange={handleGameSourceChange} value={source}>
+                                {GameSources.map(gs => (
+                                    <option key={gs} value={gs}>{gs}</option>
+                                ))}
+                            </select>
+                        </div>
                         <Item game={game} isShaking={isShaking} />
                         {gameWon || gameLost ? (
                             <div className="flex flex-col gap-2 text-center">
@@ -170,10 +184,10 @@ export const GamePage: React.FC<GamePageProps> = ({ mode }) => {
                                         <p className="mb-4">Prøv igen om {" "}
                                             <CountdownToMidnightUTC />.
                                         </p>
-                                        <p>Eller, tryk <a className="link" href="/random">her</a> for at gætte prisen på en tilfældig vare</p>
+                                        <p>Eller, tryk <a className="link" href={`/random?gs=${source}`}>her</a> for at gætte prisen på en tilfældig vare</p>
                                     </>
                                 ) : (
-                                    <p><a className="link" href="/random">Prøv en ny tilfældig vare</a></p>
+                                    <p><a className="link" href={`/random?gs=${source}`}>Prøv en ny tilfældig vare</a></p>
                                 )}
                             </div>
                         ) : (
