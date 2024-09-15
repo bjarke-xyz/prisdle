@@ -1,14 +1,8 @@
 import fs from 'node:fs'
+import { GameData, shuffle } from './gamedata';
 
 // TODO: automate this
 const usedGameIds = new Set(["417046", "411428", "412675", "412673", "411433"]);
-
-interface GameData {
-    itemId: string;
-    name: string;
-    price: number;
-    image: string;
-}
 
 interface RawDataHit {
     id: number;
@@ -124,18 +118,3 @@ main();
 
 
 
-function shuffle(array: unknown[]) {
-    let currentIndex = array.length;
-
-    // While there remain elements to shuffle...
-    while (currentIndex != 0) {
-
-        // Pick a remaining element...
-        const randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-    }
-}
