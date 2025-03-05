@@ -14,7 +14,7 @@ export function getGames(source: GameSource, random: boolean): Promise<GameData[
         url = `https://static.bjarke.xyz/prisdle/random-games${gameUrlSuffix}.json`;
     }
     return fetch(url)
-        .then(resp => resp.json<GameData[]>())
+        .then(resp => resp.json())
         .catch(err => {
             console.error(err)
             throw err;
