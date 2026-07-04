@@ -1,22 +1,50 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+.input {
+  width: 16rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.25rem;
+  background-color: #fff;
+  padding: 0.5rem;
+  text-align: center;
+}
 
-@layer components {
-  .input {
-    @apply border-2 border-gray-300 bg-white p-2 rounded text-center w-64;
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"] {
+  appearance: textfield;
+  -webkit-appearance: none;
+  margin: 0;
+  -moz-appearance: textfield !important;
+}
+
+.link {
+  text-decoration: underline;
+}
+
+.animate-shake {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
   }
 
-  input[type='number']::-webkit-outer-spin-button,
-  input[type='number']::-webkit-inner-spin-button,
-  input[type='number'] {
-    -webkit-appearance: none;
-    margin: 0;
-    -moz-appearance: textfield !important;
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
   }
 
-  .link {
-    @apply underline;
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
   }
 }
